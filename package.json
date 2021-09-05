@@ -9,6 +9,7 @@
     "docs:dev": "vuepress dev docs"
   },
   "dependencies": {
+    "@arcgis/core": "^4.20.2",
     "cesium": "1.71.0",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.0",
@@ -48,8 +49,9 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "vue/valid-template-root":"off",
-      "no-unused-vars":"off"
+      "vue/valid-template-root": "off",
+      "no-unused-vars": "off",
+      "no-dupe-keys":"off"
     }
   },
   "browserslist": [

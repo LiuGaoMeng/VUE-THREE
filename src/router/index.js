@@ -12,10 +12,10 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Demo.vue')
   },
   {
-    path: '/Install',
-    name: 'Install',
+    path: '/Map',
+    name: 'Map',
     meta:'安装',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Install.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/Map.vue')
   },
   {
     path: '/Test',
