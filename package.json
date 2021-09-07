@@ -51,7 +51,9 @@
     "rules": {
       "vue/valid-template-root": "off",
       "no-unused-vars": "off",
-      "no-dupe-keys":"off"
+      "no-dupe-keys":"off",
+      "no-debugger": "off", 
+      "no-console":"off"
     }
   },
   "browserslist": [

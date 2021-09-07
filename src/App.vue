@@ -1,6 +1,14 @@
+<!--
+ * @Descripttion: liugm
+ * @version: 1.0
+ * @Author: liugm
+ * @Date: 2021-09-03 09:59:39
+ * @LastEditors: liugm
+ * @LastEditTime: 2021-09-07 16:55:14
+-->
 <template>
   <div id="app">
-      <el-header class="header">A-UI</el-header>
+      <!-- <el-header class="header">A-UI</el-header> -->
       <el-container class="container">
         <el-aside width="200px">
           <Menu></Menu>
@@ -40,7 +48,7 @@ export default {
 }
 .container{
   position: absolute;
-  top: 60px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;

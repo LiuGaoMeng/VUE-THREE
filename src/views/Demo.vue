@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-03 10:51:12
+ * @LastEditTime: 2021-09-07 16:12:58
 -->
 <template>
   <div id="viewDiv" class="viewDiv"></div>
@@ -13,6 +13,7 @@
 import SceneView from "@arcgis/core/views/SceneView";
 import Map from "@arcgis/core/Map";
 import * as THREE from "three";
+import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
 import { add, requestRender } from "@arcgis/core/views/3d/externalRenderers";
 export default {
   name: "Demo",
@@ -22,11 +23,15 @@ export default {
       scene: null,
       camera: null,
       cube: null,
+      htdata:
+        '<div class="tag" id="tag"><span style="color:white;font-size: 10px;padding: 5px">楼宇名称：</span><span style="font-size: 11px;font-weight: bold">XXX大厦</span><p style="padding: 5px;margin-top: -3px;">占地面积：25541平方米</p>' +
+        "</div>",
     };
   },
   mounted() {
-    this.initMap();
+    // this.initMap();
     this.initThree();
+    // this.initCCS2D();
   },
   methods: {
     initMap() {
@@ -60,6 +65,11 @@ export default {
       this.cube.rotation.x += 0.01;
       this.renderer.render(this.scene, this.camera);
     },
+    // initCCS2D() {
+    //   var moonLabel = new CSS2DObject(this.htdata);
+
+    //   var labelRenderer = new CSS2DRenderer();
+    // },
   },
 };
 </script>
