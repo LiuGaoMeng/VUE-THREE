@@ -14,7 +14,6 @@ import SceneView from "@arcgis/core/views/SceneView";
 import Map from "@arcgis/core/Map";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import WebScene from "@arcgis/core/WebScene";
-import * as threeTools from "../libs/tools/threeTool";
 import * as THREE from "three";
 import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import Basemap from "@arcgis/core/Basemap";
@@ -27,54 +26,7 @@ export default {
       cube: null,
       signRender: null,
       tabList: [],
-      data: [
-        {
-          name: "潭村水闸",
-          coox: 113.341965,
-          cooy: 23.113024,
-          id: "tc",
-          v: 5,
-          warnValue: 10,
-        },
-        {
-          name: "员村水闸",
-          coox: 113.35089900000001,
-          cooy: 23.111856,
-          id: "yc",
-        },
-        {
-          name: "程界西涌",
-          coox: 113.36743700000001,
-          cooy: 23.110167999999998,
-          id: "tc",
-        },
-        {
-          name: "长兴截污闸",
-          coox: 113.35840300000001,
-          cooy: 23.169264,
-          id: "cx",
-        },
-        {
-          name: "车陂涌闸",
-          coox: 113.39313700000001,
-          cooy: 23.111074000000002,
-          id: "cb",
-        },
-        {
-          name: "杨梅河",
-          coox: 113.40226999999999,
-          cooy: 23.152552,
-          id: "ym",
-        },
-        {
-          name: "鱼珠水闸",
-          coox: 113.42236700000001,
-          cooy: 23.102646,
-          id: "yz",
-        },
-        { name: "测试", coox: 108.3, cooy: 22.8, id: "cs" },
-        { name: "测试", coox: 108.35, cooy: 22.82, id: "cs2" },
-      ],
+
       mesh: null,
     };
   },
@@ -128,30 +80,25 @@ export default {
         //   wkid: 4326,
         // },
       });
-      that.signRender = {
+      var signRender = {
         scene: null,
         camera: null,
         renderer: null,
         // ambient: null, // three.js中的环境光
         // sun: null, // three.js中的平行光源，模拟太阳光
-        setup: function(context) {
-          debugger;
-
+        setup: (context) => {
           this.renderer = new THREE.WebGLRenderer({
             context: context.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
             premultipliedAlpha: false, // renderer是否假设颜色有 premultiplied alpha. 默认为true
           });
           this.renderer.setSize(window.innerWidth, window.innerHeight);
-          // this.renderer.setClearColor("#FFFFFF");
           this.renderer.setPixelRatio(window.devicePixelRatio);
           this.renderer.setViewport(0, 0, sceneView.width, sceneView.height); //视图大小设置
-          // document.getElementById("viewDiv").appendChild(this.renderer.domElement);
           this.renderer.autoClearDepth = false; // 定义renderer是否清除深度缓存
           this.renderer.autoClearStencil = false; // 定义renderer是否清除模板缓存
           this.renderer.autoClearColor = false; // 定义renderer是否清除颜色缓存
           this.scene = new THREE.Scene(); //定义场景
           this.camera = new THREE.PerspectiveCamera(); //定义相机
-
           const originalSetRenderTarget = this.renderer.setRenderTarget.bind(this.renderer);
           this.renderer.setRenderTarget = function(target) {
             originalSetRenderTarget(target);
@@ -159,37 +106,16 @@ export default {
               context.bindRenderTarget();
             }
           };
-          // this.ambient = new THREE.AmbientLight(0xffffff, 0.5); // 环境光
-          // this.scene.add(this.ambient); // 把环境光添加到场景中
-          // this.sun = new THREE.DirectionalLight(0xffffff, 0.5); // 平行光（模拟太阳光）
-          // this.scene.add(this.sun); // 把太阳光添加到场景中
-
-          // var resultPoint = [];
-          // toRenderCoordinates(sceneView, [108.3, 22.8,20], 0, SpatialReference.WGS84, resultPoint, 0, 1);
-          //半球几何
-          // var sphereGeom = new THREE.SphereGeometry(1000, 100, 100, 0, Math.PI * 2, 0, Math.PI / 2);
-          // //半球几何
-          // var material = new THREE.MeshBasicMaterial({
-          //   transparent: true,
-          //   opacity: 1,
-          //   color: new THREE.Color("#f28000"),
-          // });
-          // let sphereGeom = new THREE.BoxGeometry(400, 400, 400);
-          // let material = new THREE.MeshBasicMaterial({ color: "red" });
-          // this.mesh = new THREE.Mesh(sphereGeom, material);
-          // this.mesh.position.set(resultPoint[0], resultPoint[1], resultPoint[2]);
-          // this.scene.add(this.mesh);
           context.resetWebGLState();
         },
-        render: function(context) {
+        render: (context) => {
           var resultPoint = [];
           toRenderCoordinates(sceneView, [108.3, 22.8, 1000], 0, SpatialReference.WGS84, resultPoint, 0, 1);
           let sphereGeom = new THREE.BoxGeometry(400, 400, 400);
           let material = new THREE.MeshBasicMaterial({ color: "red" });
           let mesh = new THREE.Mesh(sphereGeom, material);
-           mesh.position.set(resultPoint[0], resultPoint[1], resultPoint[2]);
+          mesh.position.set(resultPoint[0], resultPoint[1], resultPoint[2]);
           this.scene.add(mesh);
-          // this.renderderAnimation();
           const cam = context.camera;
           this.camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2]);
           this.camera.up.set(cam.up[0], cam.up[1], cam.up[2]);
@@ -201,14 +127,11 @@ export default {
           context.resetWebGLState();
         },
       };
-      setTimeout( function(){
-//5秒后实现的方法写在这个方法里面
-add(sceneView, that.signRender);
-}, 8 * 1000 )
-      // sceneView.when(() => {
-      //   debugger
-      //   add(sceneView, that.signRender);
-      // });
+      // add(sceneView, signRender);
+      sceneView.when(() => {
+        debugger;
+        add(sceneView, signRender);
+      });
     },
 
     renderderAnimation() {

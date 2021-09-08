@@ -8,7 +8,6 @@
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Test from '../views/Test.vue'
 
 Vue.use(VueRouter)
 
