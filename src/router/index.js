@@ -31,12 +31,12 @@ const routes = [
   //   meta:'测试组件',
   //   component: Test
   // },
-  // {
-  //   path: '/Calendar',
-  //   name: 'Calendar',
-  //   meta:'日历',
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/Calendar.vue')
-  // },
+  {
+    path: '/pipe',
+    name: 'pipe',
+    meta:'管道',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Pipe.vue')
+  },
 ]
 
 const router = new VueRouter({
