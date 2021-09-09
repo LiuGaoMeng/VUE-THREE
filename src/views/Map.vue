@@ -149,14 +149,12 @@ export default {
       toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
       var resultPoint1 = [];
       toRenderCoordinates(this.sceneView, [108.3, 22.7, 3000], 0, SpatialReference.WGS84, resultPoint1, 0, 1);
-
-      
       let geometry = new THREE.BufferGeometry();
       const position = [];
       position.push(resultPoint[0], resultPoint[1], resultPoint[2]);
       position.push(resultPoint1[0], resultPoint1[1], resultPoint1[2]);
-      geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( position, 3 ) );
-      let material = new THREE.LineBasicMaterial({ color: new THREE.Color('#1E90FF'), linewidth:10});
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(position, 3));
+      let material = new THREE.LineBasicMaterial({ color: new THREE.Color("#1E90FF"), linewidth: 10 });
       let line = new THREE.Line(geometry, material);
       return line;
     },
