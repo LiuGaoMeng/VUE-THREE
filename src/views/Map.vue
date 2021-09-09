@@ -16,6 +16,7 @@ import Map from "@arcgis/core/Map";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import { add, requestRender, toRenderCoordinates } from "@arcgis/core/views/3d/externalRenderers";
 import { CSS2DObject, CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { CSS3DRenderer, CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer";
 export default {
   name: "Map",
   data() {
@@ -50,6 +51,7 @@ export default {
         camera: null,
         renderer: null,
         css2dRenderer: null,
+        css3dRenderer: null,
         setup: (context) => {
           this.renderer = new THREE.WebGLRenderer({
             context: context.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
@@ -79,21 +81,22 @@ export default {
           this.scene.add(this.addLine(this.poi));
           let label = this.css2dDiv();
           this.scene.add(label);
-         
+
           //CSS2DRenderer
-          this.css2dRenderer = new CSS2DRenderer();
-          this.css2dRenderer.setSize(window.innerWidth, window.innerHeight);
-          this.css2dRenderer.domElement.style.position = "absolute";
-          // 相对鼠标的相对偏移
-          this.css2dRenderer.domElement.style.top = "-20px";
-          this.css2dRenderer.domElement.style.left = "125px";
-          // //设置.pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
-          this.css2dRenderer.domElement.style.pointerEvents = "none";
-          document.getElementById('viewDiv').appendChild(this.css2dRenderer.domElement );
+          // this.css2dRenderer = new CSS2DRenderer();
+          // this.css2dRenderer.setSize(window.innerWidth, window.innerHeight);
+          // this.css2dRenderer.domElement.style.position = "absolute";
+          // this.css2dRenderer.domElement.style.top = "-20px";// 相对鼠标的相对偏移
+          // this.css2dRenderer.domElement.style.left = "125px";// 相对鼠标的相对偏移
+          // this.css2dRenderer.domElement.style.pointerEvents = "none";//设置.pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
+          // document.getElementById("viewDiv").appendChild(this.css2dRenderer.domElement);
+
+          this.css3dRenderer = new CSS3DRenderer();
+          document.getElementById("viewDiv").appendChild(this.css3dRenderer.domElement);
+
           context.resetWebGLState();
         },
         render: (context) => {
-           
           this.mesh.rotation.y += 0.01;
           this.mesh.rotation.z += 0.01;
           this.mesh.rotation.x += 0.01;
@@ -116,7 +119,8 @@ export default {
           this.renderer.render(this.scene, this.camera);
 
           // this.css2dRenderer.state.reset();
-          this.css2dRenderer.render(this.scene, this.camera);
+          // this.css2dRenderer.render(this.scene, this.camera);
+          this.css3dRenderer.render(this.scene, this.camera);
           requestRender(this.sceneView); // 请求重绘视图。
           context.resetWebGLState(); // cleanup
         },
@@ -172,11 +176,12 @@ export default {
     css2dDiv(poi) {
       let resultPoint1 = this.xyToRender([108.3, 22.7, 2000]);
       let div = document.createElement("div");
-      div.id='div1'
+      div.id = "div1";
       div.innerHTML =
-        '<div class="tabtop"><span style="color:white;font-size: 10px;padding: 5px">楼宇名称：</span><span style="font-size: 11px;font-weight: bold">XXX大厦</span><p style="padding: 5px;margin-top: -3px;">占地面积：25541平方米</p></div>'
+        '<div class="tabtop"><span style="color:white;font-size: 10px;padding: 5px">楼宇名称：</span><span style="font-size: 11px;font-weight: bold">XXX大厦</span><p style="padding: 5px;margin-top: -3px;">占地面积：25541平方米</p></div>';
       div.classList = "tap";
-      const label = new CSS2DObject(div);
+      // const label = new CSS2DObject(div);
+      const label = new CSS3DObject(div);
       div.style.pointerEvents = "none"; //避免HTML标签遮挡三维场景的鼠标事件
 
       // 设置HTML元素标签在three.js世界坐标中位置
