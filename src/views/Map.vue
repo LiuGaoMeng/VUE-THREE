@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-09 18:22:38
+ * @LastEditTime: 2021-09-09 18:30:45
 -->
 <template>
   <div id="viewDiv" class="viewDiv"></div>
@@ -148,7 +148,7 @@ export default {
       var resultPoint = [];
       toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
       var resultPoint1 = [];
-      toRenderCoordinates(this.sceneView, [108.3, 22.7, 1000], 0, SpatialReference.WGS84, resultPoint1, 0, 1);
+      toRenderCoordinates(this.sceneView, [108.3, 22.7, 3000], 0, SpatialReference.WGS84, resultPoint1, 0, 1);
 
       
       let geometry = new THREE.BufferGeometry();
