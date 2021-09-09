@@ -14,10 +14,8 @@ import * as THREE from "three";
 import SceneView from "@arcgis/core/views/SceneView";
 import Map from "@arcgis/core/Map";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
-import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
-import Basemap from "@arcgis/core/Basemap";
-
 import { add, requestRender, toRenderCoordinates } from "@arcgis/core/views/3d/externalRenderers";
+import { CSS2DObject, CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
 export default {
   name: "Map",
   data() {
@@ -51,12 +49,13 @@ export default {
         scene: null,
         camera: null,
         renderer: null,
+        css2dRenderer: null,
         setup: (context) => {
           this.renderer = new THREE.WebGLRenderer({
             context: context.gl, // 可用于将渲染器附加到已有的渲染环境(RenderingContext)中
             premultipliedAlpha: false, // renderer是否假设颜色有 premultiplied alpha. 默认为true
           });
-          this.renderer.setSize(window.innerWidth, window.innerHeight);
+          // this.renderer.setSize(window.innerWidth, window.innerHeight);
           this.renderer.setPixelRatio(window.devicePixelRatio);
           this.renderer.setViewport(0, 0, this.sceneView.width, this.sceneView.height); //视图大小设置
           this.renderer.autoClearDepth = false; // 定义renderer是否清除深度缓存
@@ -78,21 +77,34 @@ export default {
           this.scene.add(this.ciMesh);
 
           this.scene.add(this.addLine(this.poi));
+          let label = this.css2dDiv();
+          this.scene.add(label);
+         
+          //CSS2DRenderer
+          this.css2dRenderer = new CSS2DRenderer();
+          this.css2dRenderer.setSize(window.innerWidth, window.innerHeight);
+          this.css2dRenderer.domElement.style.position = "absolute";
+          // 相对鼠标的相对偏移
+          this.css2dRenderer.domElement.style.top = "-20px";
+          this.css2dRenderer.domElement.style.left = "125px";
+          // //设置.pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
+          this.css2dRenderer.domElement.style.pointerEvents = "none";
+          document.getElementById('viewDiv').appendChild(this.css2dRenderer.domElement );
           context.resetWebGLState();
         },
         render: (context) => {
+           
           this.mesh.rotation.y += 0.01;
           this.mesh.rotation.z += 0.01;
           this.mesh.rotation.x += 0.01;
-          this.ciMesh.scale.x = this.ciMesh.scale.x + 1;
-          this.ciMesh.scale.y = this.ciMesh.scale.y + 1;
-          this.ciMesh.scale.z = this.ciMesh.scale.z + 1;
+          this.ciMesh.scale.x = this.ciMesh.scale.x + 1.5;
+          this.ciMesh.scale.y = this.ciMesh.scale.y + 1.5;
+          this.ciMesh.scale.z = this.ciMesh.scale.z + 1.5;
           if (this.ciMesh.scale.x > 100) {
             this.ciMesh.scale.x = 60;
             this.ciMesh.scale.y = 60;
             this.ciMesh.scale.z = 60;
           }
-          debugger;
           // 更新相机参数
           const cam = context.camera;
           this.camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2]);
@@ -102,6 +114,9 @@ export default {
           // 绘制场景
           this.renderer.state.reset();
           this.renderer.render(this.scene, this.camera);
+
+          // this.css2dRenderer.state.reset();
+          this.css2dRenderer.render(this.scene, this.camera);
           requestRender(this.sceneView); // 请求重绘视图。
           context.resetWebGLState(); // cleanup
         },
@@ -109,8 +124,7 @@ export default {
       add(this.sceneView, signRender);
     },
     createBoxGeo(poi) {
-      var resultPoint = [];
-      toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
+      var resultPoint = this.xyToRender(poi);
       let sphereGeom = new THREE.BoxGeometry(400, 400, 400);
       let material = new THREE.MeshBasicMaterial({ color: "red" });
       let mesh = new THREE.Mesh(sphereGeom, material);
@@ -121,8 +135,7 @@ export default {
       var texture = new THREE.TextureLoader().load(imgUrl);
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
-      var resultPoint = [];
-      toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
+      var resultPoint = this.xyToRender(poi);
       var material = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true, //使用背景透明的png贴图，注意开启透明计算
@@ -145,10 +158,8 @@ export default {
       return mesh;
     },
     addLine(poi) {
-      var resultPoint = [];
-      toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
-      var resultPoint1 = [];
-      toRenderCoordinates(this.sceneView, [108.3, 22.7, 3000], 0, SpatialReference.WGS84, resultPoint1, 0, 1);
+      var resultPoint = this.xyToRender(poi);
+      var resultPoint1 = this.xyToRender([108.3, 22.7, 2000]);
       let geometry = new THREE.BufferGeometry();
       const position = [];
       position.push(resultPoint[0], resultPoint[1], resultPoint[2]);
@@ -158,17 +169,29 @@ export default {
       let line = new THREE.Line(geometry, material);
       return line;
     },
-    renderderAnimation() {
-      requestAnimationFrame(this.renderderAnimation);
-      this.mesh.rotation.y += 0.01;
-      this.mesh.rotation.z += 0.01;
-      this.mesh.rotation.x += 0.01;
-      this.renderer.render(this.scene, this.camera);
+    css2dDiv(poi) {
+      let resultPoint1 = this.xyToRender([108.3, 22.7, 2000]);
+      let div = document.createElement("div");
+      div.id='div1'
+      div.innerHTML =
+        '<div class="tabtop"><span style="color:white;font-size: 10px;padding: 5px">楼宇名称：</span><span style="font-size: 11px;font-weight: bold">XXX大厦</span><p style="padding: 5px;margin-top: -3px;">占地面积：25541平方米</p></div>'
+      div.classList = "tap";
+      const label = new CSS2DObject(div);
+      div.style.pointerEvents = "none"; //避免HTML标签遮挡三维场景的鼠标事件
+
+      // 设置HTML元素标签在three.js世界坐标中位置
+      label.position.set(resultPoint1[0], resultPoint1[1], resultPoint1[2]);
+      return label;
+    },
+    xyToRender(poi) {
+      let resultPoint = [];
+      toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
+      return resultPoint;
     },
   },
 };
 </script>
-<style scoped>
+<style>
 @import "/assets/esri/themes/dark/main.css";
 #viewDiv {
   padding: 0;
@@ -181,5 +204,22 @@ export default {
   margin: 0;
   height: 100%;
   width: 100%;
+}
+.tap {
+  border-top-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  opacity: 1;
+  font-size: 4px;
+  color: aqua;
+  width: 250px;
+  height: 60px;
+}
+.tabtop {
+  height: 60px;
+  background-color: rgba(0, 10, 40);
+}
+.picture {
+  height: 200px;
+  text-align: center;
 }
 </style>
