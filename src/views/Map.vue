@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-09 18:30:45
+ * @LastEditTime: 2021-09-10 18:14:15
 -->
 <template>
   <div id="viewDiv" class="viewDiv"></div>
@@ -22,8 +22,80 @@ export default {
     return {
       sceneView: null,
       ciMesh: null,
-      mesh: null,
+      groupList: [],
       poi: [108.3, 22.7, 0.5],
+      dataList: [
+        {
+          name: "潭村水闸",
+          coox: 113.341965,
+          cooy: 23.113024,
+          id: "tc",
+          value: 5,
+          warnValue: 10,
+          trend: "up",
+          STTP: "RR",
+        },
+        {
+          name: "员村水闸",
+          coox: 113.35089900000001,
+          cooy: 23.111856,
+          id: "yc",
+          value: 2,
+          warnValue: 3,
+          trend: "up",
+          STTP: "RF",
+        },
+        {
+          name: "程界西涌",
+          coox: 113.36743700000001,
+          cooy: 23.110167999999998,
+          id: "tc",
+          value: 3,
+          warnValue: 4,
+          trend: "down",
+          STTP: "RP",
+        },
+        {
+          name: "长兴截污闸",
+          coox: 113.35840300000001,
+          cooy: 23.169264,
+          id: "cx",
+          value: 5,
+          warnValue: 10,
+          trend: "up",
+          STTP: "RV",
+        },
+        {
+          name: "车陂涌闸",
+          coox: 113.39313700000001,
+          cooy: 23.111074000000002,
+          id: "cb",
+          value: 5,
+          warnValue: 10,
+          trend: "up",
+          STTP: "RR",
+        },
+        {
+          name: "杨梅河",
+          coox: 113.40226999999999,
+          cooy: 23.152552,
+          id: "ym",
+          value: 5,
+          warnValue: 8,
+          trend: "down",
+          STTP: "RF",
+        },
+        {
+          name: "鱼珠水闸",
+          coox: 113.42236700000001,
+          cooy: 23.102646,
+          id: "yz",
+          value: 4,
+          warnValue: 6,
+          trend: "down",
+          STTP: "RV",
+        },
+      ],
     };
   },
   mounted() {
@@ -39,7 +111,7 @@ export default {
         viewingMode: "global",
         map: map,
         camera: {
-          position: [108.3, 22.8, 6000],
+          position: [113.37, 23, 10000],
           tilt: 60,
           heading: 0,
           fov: 55,
@@ -71,15 +143,15 @@ export default {
           };
           this.scene = new THREE.Scene(); //定义场景
           this.camera = new THREE.PerspectiveCamera(); //定义相机
-          this.mesh = this.createBoxGeo([108.3, 22.8, 800]);
-          this.scene.add(this.mesh);
-          this.ciMesh = this.createPointMesh(this.poi, "/img/btmcircle.png");
-          this.scene.add(this.ciMesh);
+          this.dataList.forEach((item) => {
+            let group = new THREE.Group();
+            group.add(this.createPointMesh([item.coox, item.cooy, 0.5], "/img/map/sign/btmcircle.png"));
+            group.add(this.addLine([item.coox, item.cooy, 0]));
+            group.add(this.css2dDiv(item, [item.coox, item.cooy, 2000]));
+            this.scene.add(group);
+            this.groupList.push(group);
+          });
 
-          this.scene.add(this.addLine(this.poi));
-          let label = this.css2dDiv();
-          this.scene.add(label);
-         
           //CSS2DRenderer
           this.css2dRenderer = new CSS2DRenderer();
           this.css2dRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -87,24 +159,23 @@ export default {
           // 相对鼠标的相对偏移
           this.css2dRenderer.domElement.style.top = "-20px";
           this.css2dRenderer.domElement.style.left = "125px";
-          // //设置.pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
+          // //设置pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
           this.css2dRenderer.domElement.style.pointerEvents = "none";
-          document.getElementById('viewDiv').appendChild(this.css2dRenderer.domElement );
+          document.getElementById("viewDiv").appendChild(this.css2dRenderer.domElement);
+          this.changeVisible();
           context.resetWebGLState();
         },
         render: (context) => {
-           
-          this.mesh.rotation.y += 0.01;
-          this.mesh.rotation.z += 0.01;
-          this.mesh.rotation.x += 0.01;
-          this.ciMesh.scale.x = this.ciMesh.scale.x + 1.5;
-          this.ciMesh.scale.y = this.ciMesh.scale.y + 1.5;
-          this.ciMesh.scale.z = this.ciMesh.scale.z + 1.5;
-          if (this.ciMesh.scale.x > 100) {
-            this.ciMesh.scale.x = 60;
-            this.ciMesh.scale.y = 60;
-            this.ciMesh.scale.z = 60;
-          }
+          this.groupList.forEach((item) => {
+            item.children[0].scale.x = item.children[0].scale.x + 1.5;
+            item.children[0].scale.y = item.children[0].scale.y + 1.5;
+            item.children[0].scale.z = item.children[0].scale.z + 1.5;
+            if (item.children[0].scale.x > 100) {
+              item.children[0].scale.x = 60;
+              item.children[0].scale.y = 60;
+              item.children[0].scale.z = 60;
+            }
+          });
           // 更新相机参数
           const cam = context.camera;
           this.camera.position.set(cam.eye[0], cam.eye[1], cam.eye[2]);
@@ -159,7 +230,7 @@ export default {
     },
     addLine(poi) {
       var resultPoint = this.xyToRender(poi);
-      var resultPoint1 = this.xyToRender([108.3, 22.7, 2000]);
+      var resultPoint1 = this.xyToRender([poi[0], poi[1], 2000]);
       let geometry = new THREE.BufferGeometry();
       const position = [];
       position.push(resultPoint[0], resultPoint[1], resultPoint[2]);
@@ -169,12 +240,25 @@ export default {
       let line = new THREE.Line(geometry, material);
       return line;
     },
-    css2dDiv(poi) {
-      let resultPoint1 = this.xyToRender([108.3, 22.7, 2000]);
+    css2dDiv(item, poi) {
+      let stData = this.addclassImg(item.STTP);
+
+      let resultPoint1 = this.xyToRender(poi);
       let div = document.createElement("div");
-      div.id='div1'
+      div.id = "div1";
       div.innerHTML =
-        '<div class="tabtop"><span style="color:white;font-size: 10px;padding: 5px">楼宇名称：</span><span style="font-size: 11px;font-weight: bold">XXX大厦</span><p style="padding: 5px;margin-top: -3px;">占地面积：25541平方米</p></div>'
+        '<div class="tabtop"><div class="left" ><img src="' +
+        stData.imgUrl +
+        '" ></div><div class="right"><span class="moniname">' +
+        item.name +
+        '</span><span class="value">' +
+        stData.name +
+        item.value +
+        stData.unit +
+        '<img src="/img/map/sign/rise.png" style="padding-left:5px"></img><span class="warnvalue">预警值：' +
+        item.warnValue +
+        stData.unit +
+        "</span></div></div>";
       div.classList = "tap";
       const label = new CSS2DObject(div);
       div.style.pointerEvents = "none"; //避免HTML标签遮挡三维场景的鼠标事件
@@ -187,6 +271,50 @@ export default {
       let resultPoint = [];
       toRenderCoordinates(this.sceneView, poi, 0, SpatialReference.WGS84, resultPoint, 0, 1);
       return resultPoint;
+    },
+    addclassImg(sttp) {
+      switch (sttp) {
+        case "RR":
+          return {
+            imgUrl: "/img/map/sign/river.png",
+            unit: "m",
+            name: "河道水位：",
+          };
+        case "RF":
+          return {
+            imgUrl: "/img/map/sign/rainfall.png",
+            unit: "cm",
+            name: "雨量：",
+          };
+        case "RV":
+          return {
+            imgUrl: "/img/map/sign/reservoir.png",
+            unit: "m",
+            name: "水库：",
+          };
+        case "RP":
+          return {
+            imgUrl: "/img/map/sign/waterpoint.png",
+            unit: "cm",
+            name: "积水点：",
+          };
+
+        default:
+          break;
+      }
+    },
+    changeVisible() {
+      this.sceneView.watch("camera", () => {
+        this.groupList.forEach((item) => {
+          if (this.sceneView.zoom < 10) {
+            item.children[2].element.style.visibility = "hidden";
+            item.visible = false;
+          } else {
+            item.children[2].element.style.visibility = "visible";
+            item.visible = true;
+          }
+        });
+      });
     },
   },
 };
@@ -206,20 +334,55 @@ export default {
   width: 100%;
 }
 .tap {
+  position: absolute;
+
   border-top-left-radius: 10px;
+
   border-bottom-right-radius: 10px;
+
   opacity: 1;
+
   font-size: 4px;
+
   color: aqua;
+
   width: 250px;
+
   height: 60px;
 }
+
 .tabtop {
   height: 60px;
+  text-align: center;
   background-color: rgba(0, 10, 40);
 }
-.picture {
-  height: 200px;
-  text-align: center;
+
+.left {
+  float: left;
+  width: 50px;
+  margin-top: 10px;
+}
+.right {
+  overflow: hidden;
+  height: 100%;
+}
+.moniname {
+  display: block;
+  color: rgba(255, 255, 255, 0.842);
+  font-size: 14px;
+  font-weight: bold;
+  /* text-align: center; */
+  padding-top: 10px;
+}
+.value {
+  color: azure;
+  font-size: 9px;
+  padding-top: 14px;
+}
+.warnvalue {
+  color: azure;
+  font-size: 9px;
+  padding-top: 14px;
+  padding-left: 30px;
 }
 </style>
