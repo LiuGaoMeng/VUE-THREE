@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-15 14:46:15
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-15 15:43:12
+ * @LastEditTime: 2021-09-15 18:44:39
 -->
 <template>
   <div id="viewDiv1" class="viewDiv"></div>
@@ -22,11 +22,11 @@ export default {
 
   data() {
     return {
-        camera:null,
-        renderer:null,
-        scene:null
-
-
+      camera: null,
+      renderer: null,
+      scene: null,
+      curve: null,
+      anmations:[]
     };
   },
   mounted() {
@@ -85,18 +85,38 @@ export default {
       this.scene = new THREE.Scene();
       // this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
       this.camera = new THREE.PerspectiveCamera();
-      this.renderer = new THREE.WebGLRenderer();
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: true
+      });
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.renderer.setClearColor("#FFFFFF");
       document.getElementById("viewDiv1").appendChild(this.renderer.domElement);
       let zline = this.addLine();
       this.scene.add(zline);
-      this.camera.position.set( 0, 0, 50 )
+      // this.createMovingLine(this.curve);
+      new Array(4).fill(0).forEach((it, i) => {
+        const movingLine = this.createMovingLine(this.curve, i * 100);
+        this.anmations.push(movingLine);
+        this.scene.add(movingLine.mesh);
+      });
+      this.camera.position.set(0, 0, 150);
+      this.renderderAnimation();
+    },
+    renderderAnimation() {
+      requestAnimationFrame(this.renderderAnimation);      
+      this.anmations.forEach((item) => {
+        item.index + 1 > item.linePointsV3.length - item.verticNum ? (item.index = 0) : (item.index += 3);
+        item.mesh.geometry.setPositions(
+          item.linePointsV3.slice(item.index, item.index + item.verticNum).reduce((arr, item) => {
+            return arr.concat(item.x, item.y, item.z);
+          }, [])
+        );
+      });
+
       this.renderer.render(this.scene, this.camera);
     },
-
     addLine() {
-      const curve = new THREE.CatmullRomCurve3(
+      this.curve = new THREE.CatmullRomCurve3(
         [
           new THREE.Vector3(-20, 30, 4),
           new THREE.Vector3(20, 30, 4),
@@ -117,21 +137,94 @@ export default {
         "catmullrom",
         0.05
       );
-      debugger;
       // 轨迹线
-      const points = curve.getPoints(100).reduce((arr, item) => {
+      const points = this.curve.getPoints(1000).reduce((arr, item) => {
         return arr.concat(item.x, item.y, item.z);
       }, []);
       const geometry = new LineGeometry();
       geometry.setPositions(points);
       const material = new LineMaterial({
         color: 0x2e91c2,
-        linewidth: 4,
+        linewidth: 2,
       });
-    //   material.resolution.set(window.innerWidth, window.innerHeight);
+      material.resolution.set(window.innerWidth, window.innerHeight);
       const line = new Line2(geometry, material);
       line.computeLineDistances();
       return line;
+    },
+    createMovingLine(curve, index = 0, color = ["#00ffff", "#224242"], pointNum = 300, verticNum = 30) {
+      const lightGeometry = new LineGeometry();
+      const pointsV3 = curve.getPoints(pointNum);
+      lightGeometry.setPositions(
+        pointsV3.slice(index, index + verticNum).reduce((arr, item) => {
+          return arr.concat(item.x, item.y, item.z);
+        }, [])
+      );
+      const lightMaterial = new LineMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        linewidth: 8,
+        depthTest: false, // 慎用
+        vertexColors: THREE.VertexColors,
+      });
+      // 渐变色处理
+      const colors = this.gradientColors(color[1], color[0], verticNum);
+      const colorArr = colors.reduce((arr, item) => {
+        const Tcolor = new THREE.Color(item);
+        return arr.concat(Tcolor.r, Tcolor.g, Tcolor.b);
+      }, []);
+      lightGeometry.setColors(colorArr);
+      lightMaterial.resolution.set(window.innerWidth, window.innerHeight);
+      const lightLine = new Line2(lightGeometry, lightMaterial);
+      lightLine.computeLineDistances();
+      return {
+        index,
+        verticNum,
+        mesh: lightLine,
+        linePointsV3: pointsV3,
+      };
+    },
+    gradientColors(start, end, steps, gamma) {
+      const parseColor = function(hexStr) {
+        return hexStr.length === 4
+          ? hexStr
+              .substr(1)
+              .split("")
+              .map(function(s) {
+                return 0x11 * parseInt(s, 16);
+              })
+          : [hexStr.substr(1, 2), hexStr.substr(3, 2), hexStr.substr(5, 2)].map(function(s) {
+              return parseInt(s, 16);
+            });
+      };
+      const pad = function(s) {
+        return s.length === 1 ? `0${s}` : s;
+      };
+      let j;
+      let ms;
+      let me;
+      const output = [];
+      const so = [];
+      // eslint-disable-next-line
+      gamma = gamma || 1;
+      const normalize = function(channel) {
+        // eslint-disable-next-line
+        return Math.pow(channel / 255, gamma);
+      };
+      // eslint-disable-next-line
+      start = parseColor(start).map(normalize);
+      // eslint-disable-next-line
+      end = parseColor(end).map(normalize);
+      for (let i = 0; i < steps; i++) {
+        ms = i / (steps - 1);
+        me = 1 - ms;
+        for (j = 0; j < 3; j++) {
+          // eslint-disable-next-line
+          so[j] = pad(Math.round(Math.pow(start[j] * me + end[j] * ms, 1 / gamma) * 255).toString(16));
+        }
+        output.push(`#${so.join("")}`);
+      }
+      return output;
     },
   },
 };
