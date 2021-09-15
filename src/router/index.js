@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-07 16:53:35
+ * @LastEditTime: 2021-09-15 15:29:48
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -35,6 +35,11 @@ const routes = [
     name: 'pipe',
     meta:'管道',
     component: () => import(/* webpackChunkName: "about" */ '../views/Pipe.vue')
+  },{
+    path: '/lineThree',
+    name: 'lineThree',
+    meta:'流光线',
+    component: () => import(/* webpackChunkName: "about" */ '../views/lineThree.vue')
   },
 ]
 
