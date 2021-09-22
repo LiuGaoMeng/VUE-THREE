@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-11 23:13:56
+ * @LastEditTime: 2021-09-22 16:37:57
 -->
 <template>
   <div id="viewDiv" class="viewDiv"></div>
@@ -16,7 +16,6 @@ import Map from "@arcgis/core/Map";
 import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 import { add, requestRender, toRenderCoordinates } from "@arcgis/core/views/3d/externalRenderers";
 import { CSS2DObject, CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { CSS3DRenderer, CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer";
 export default {
   name: "Map",
   data() {
@@ -164,6 +163,7 @@ export default {
           // //设置pointerEvents=none，以免模型标签HTML元素遮挡鼠标选择场景模型
           this.css2dRenderer.domElement.style.pointerEvents = "none";
           document.getElementById("viewDiv").appendChild(this.css2dRenderer.domElement);
+       
           this.changeVisible();
           context.resetWebGLState();
         },
@@ -189,8 +189,8 @@ export default {
           this.renderer.render(this.scene, this.camera);
 
           // this.css2dRenderer.state.reset();
-          // this.css2dRenderer.render(this.scene, this.camera);
-          this.css3dRenderer.render(this.scene, this.camera);
+          this.css2dRenderer.render(this.scene, this.camera);
+          // this.css3dRenderer.render(this.scene, this.camera);
           requestRender(this.sceneView); // 请求重绘视图。
           context.resetWebGLState(); // cleanup
         },
@@ -263,8 +263,7 @@ export default {
         stData.unit +
         "</span></div></div>";
       div.classList = "tap";
-      // const label = new CSS2DObject(div);
-      const label = new CSS3DObject(div);
+      const label = new CSS2DObject(div);
       div.style.pointerEvents = "none"; //避免HTML标签遮挡三维场景的鼠标事件
 
       // 设置HTML元素标签在three.js世界坐标中位置

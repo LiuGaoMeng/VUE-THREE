@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-15 15:29:48
+ * @LastEditTime: 2021-09-22 16:43:18
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -24,12 +24,6 @@ const routes = [
     meta:'案例',
     component: () => import(/* webpackChunkName: "about" */ '../views/Map.vue')
   },
-  // {
-  //   path: '/Test',
-  //   name: 'Test',
-  //   meta:'测试组件',
-  //   component: Test
-  // },
   {
     path: '/pipe',
     name: 'pipe',
@@ -40,6 +34,12 @@ const routes = [
     name: 'lineThree',
     meta:'流光线',
     component: () => import(/* webpackChunkName: "about" */ '../views/lineThree.vue')
+  },
+  {
+    path: '/gradientBox',
+    name: 'gradientBox',
+    meta:'渐变色',
+    component: () => import(/* webpackChunkName: "about" */ '../views/gradientBox.vue')
   },
 ]
 

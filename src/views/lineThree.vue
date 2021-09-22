@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-15 14:46:15
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-15 18:44:39
+ * @LastEditTime: 2021-09-22 14:20:27
 -->
 <template>
   <div id="viewDiv1" class="viewDiv"></div>
@@ -16,6 +16,8 @@ import * as THREE from "three";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
 
 export default {
   name: "lineThree",
@@ -100,6 +102,7 @@ export default {
         this.scene.add(movingLine.mesh);
       });
       this.camera.position.set(0, 0, 150);
+      new OrbitControls(this.camera, this.renderer.domElement);
       this.renderderAnimation();
     },
     renderderAnimation() {
