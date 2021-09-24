@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-22 16:43:18
+ * @LastEditTime: 2021-09-24 15:48:28
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -40,7 +40,18 @@ const routes = [
     name: 'gradientBox',
     meta:'渐变色',
     component: () => import(/* webpackChunkName: "about" */ '../views/gradientBox.vue')
+  },{
+    path: '/Ellipsoid',
+    name: 'Ellipsoid',
+    meta:'椭球体',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Ellipsoid.vue')
   },
+  {
+    path:'/heart',
+    name:'heart',
+    meta:"心形",
+    component: () => import(/* webpackChunkName: "about" */ '../views/heart.vue')
+  }
 ]
 
 const router = new VueRouter({
