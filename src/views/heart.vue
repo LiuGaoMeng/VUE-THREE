@@ -13,7 +13,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry.js';
-import ThreeBSP from "@/libs/threejs/ThreeBSP.js"
+const ThreeBSP = require('jthreebsp')(THREE)
 //再把THREE当作参数传入方可使用
 export default {
   name: "heart",
@@ -83,9 +83,11 @@ export default {
         .union(cylinBSP2)
         .union(cylinBSP3)
         .subtract(cylinBSP4);
-      for (let i = 0; i < 8; i++) {
+      for (let m = 0; m < 8; m++) {
+        debugger
+        let threebsp=new ThreeBSP(meshArray[m])
         //新的BSP模型分别减去各个方向的梯台模型得到结果模型
-        resultBSP = resultBSP.subtract(new ThreeBSP(meshArray[i]));
+        resultBSP = resultBSP.subtract(threebsp);
       }
       this.scene.add(resultBSP);
       new OrbitControls(this.camera, this.renderer.domElement);

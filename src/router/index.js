@@ -45,6 +45,17 @@ const routes = [
     name: 'Ellipsoid',
     meta:'椭球体',
     component: () => import(/* webpackChunkName: "about" */ '../views/Ellipsoid.vue')
+  },{
+    path: '/Curve',
+    name: 'Curve',
+    meta:'多线',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Curve.vue')
+  },
+  {
+    path:'/Map3dChina',
+    name:'Map3dChina',
+    meta:"3D地图",
+    component: () => import(/* webpackChunkName: "about" */ '../views/Map3dChina.vue')
   },
   {
     path:'/heart',

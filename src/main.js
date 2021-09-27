@@ -17,14 +17,14 @@ import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
 import VueHighlightJS from 'vue-highlightjs'
 import 'cesium/Widgets/widgets.css'
-
+import axios from 'axios'
 
 // Tell Vue.js to use vue-highlightjs
 Vue.use(VueHighlightJS)
 Vue.use(ViewUI);
 Vue.use(Element, { size: 'small' })
 Vue.use(hljs.vuePlugin);
-
+Vue.prototype.$axios=axios
 Vue.config.productionTip = false
 
 new Vue({

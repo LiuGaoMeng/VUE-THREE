@@ -14,7 +14,7 @@ import SceneView from "@arcgis/core/views/SceneView";
 import Map from "@arcgis/core/Map";
 import * as THREE from "three";
 import { add, requestRender } from "@arcgis/core/views/3d/externalRenderers";
-import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer' // 引入包
+import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer"; // 引入包
 export default {
   name: "lineDemo",
   data() {
@@ -22,6 +22,9 @@ export default {
       renderer: null,
       scene: null,
       camera: null,
+      width: null,
+      height: null,
+      // light: null,
       cube: null,
     };
   },
@@ -30,25 +33,59 @@ export default {
   },
   methods: {
     initThree() {
-      this.scene = new THREE.Scene();
-      this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-      this.renderer = new THREE.WebGLRenderer();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.renderer.setClearColor("#FFFFFF");
-      document.getElementById("viewDiv").appendChild(this.renderer.domElement);
-      let geometry = new THREE.BoxGeometry(1, 1, 1);
-      let material = new THREE.MeshBasicMaterial({ color: "blue" });
-      this.cube = new THREE.Mesh(geometry, material);
-      this.scene.add(this.cube);
-      this.camera.position.z = 2.85;
-      this.renderderAnimation();
-    },
-    renderderAnimation() {
-      requestAnimationFrame(this.renderderAnimation);
-      this.cube.rotation.y += 0.01;
-      this.cube.rotation.z += 0.01;
-      this.cube.rotation.x += 0.01;
+      this.initRender();
+      this.initCamera();
+      this.initScene();
+      this.initLight();
+      this.initObject();
+      this.renderer.clear();
       this.renderer.render(this.scene, this.camera);
+    },
+    initRender() {
+      this.width = document.getElementById("viewDiv").clientWidth;
+      this.height = document.getElementById("viewDiv").clientHeight;
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: true,
+      });
+      this.renderer.setSize(this.width, this.height);
+
+      document.getElementById("viewDiv").appendChild(this.renderer.domElement);
+      this.renderer.setClearColor("#FFFFFF");
+    },
+    initCamera() {
+      this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 10000);
+      this.camera.position.x = 0;
+      this.camera.position.y = 1000;
+      this.camera.position.z = 0;
+      this.camera.up.x = 0;
+      this.camera.up.y = 0;
+      this.camera.up.z = 1;
+      this.camera.lookAt({
+        x: 0,
+        y: 0,
+        x: 0,
+      });
+    },
+    initScene() {
+      this.scene = new THREE.Scene();
+    },
+    initLight() {
+      let light = new THREE.DirectionalLight( 0xffffff, 0.5 );
+      light.position.set(100, 100, 200);
+      this.scene.add(light);
+    },
+    initObject() {
+      let geometry = new THREE.BufferGeometry();
+      let points = [];
+      points.push(-100, 0, 0);
+      points.push(100, 0, 0);
+      let material = new THREE.LineBasicMaterial({ color: new THREE.Color("#1E90FF"),vertexColors: true });
+      let colorStart = new THREE.Color("#FF0000");
+      let colorEnd = new THREE.Color("#FFFF00");
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(points, 3));
+      // geometry.setAttribute("color", new THREE.Float32BufferAttribute([colorStart, colorEnd], 3));
+      let line = new THREE.Line(geometry, material);
+      this.scene.add(line);
     },
   },
 };

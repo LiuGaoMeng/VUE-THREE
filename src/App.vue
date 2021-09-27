@@ -10,7 +10,7 @@
   <div id="app">
       <!-- <el-header class="header">A-UI</el-header> -->
       <el-container class="container">
-        <el-aside width="200px">
+        <el-aside width="200px" >
           <Menu></Menu>
         </el-aside>
         <el-main id="main">
@@ -52,13 +52,6 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-}
-/deep/ .el-main{
-      display: block;
-    flex: 1;
-    flex-basis: auto;
-    overflow: auto;
-    box-sizing: border-box;
 }
 body pre {
     padding: 16px;
