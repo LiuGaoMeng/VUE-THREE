@@ -57,7 +57,8 @@
       "no-unused-vars": "off",
       "no-dupe-keys": "off",
       "no-debugger": "off",
-      "no-console": "off"
+      "no-console": "off",
+      "no-undef":"off"
     }
   },
   "browserslist": [

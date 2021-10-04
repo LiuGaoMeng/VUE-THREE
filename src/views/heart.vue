@@ -18,7 +18,11 @@ const ThreeBSP = require('jthreebsp')(THREE)
 export default {
   name: "heart",
   data() {
-    return {};
+    return {
+      scene:null,
+      camera:null,
+      renderer:null
+    };
   },
   mounted() {
     this.initScene();
@@ -93,8 +97,9 @@ export default {
       new OrbitControls(this.camera, this.renderer.domElement);
     },
     renderderAnimation() {
-      requestAnimationFrame(this.renderderAnimation);
+      
       this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.renderderAnimation);
     },
   },
 };

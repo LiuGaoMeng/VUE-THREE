@@ -4,7 +4,7 @@
  * @Author: liugm
  * @Date: 2021-09-03 09:59:39
  * @LastEditors: liugm
- * @LastEditTime: 2021-09-24 15:48:28
+ * @LastEditTime: 2021-09-30 16:14:58
  */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -56,6 +56,26 @@ const routes = [
     name:'Map3dChina',
     meta:"3D地图",
     component: () => import(/* webpackChunkName: "about" */ '../views/Map3dChina.vue')
+  },{
+    path:'/Box3',
+    name:'Box3',
+    meta:"球盒",
+    component: () => import(/* webpackChunkName: "about" */ '../views/Box3.vue')
+  },{
+    path:'/Door',
+    name:'Door',
+    meta:"门",
+    component: () => import(/* webpackChunkName: "about" */ '../views/Door.vue')
+  },{
+    path:'/Wave',
+    name:'Wave',
+    meta:"波浪",
+    component: () => import(/* webpackChunkName: "about" */ '../views/Wave.vue')
+  },{
+    path:'/stopLight',
+    name:'stopLight',
+    meta:"红绿灯",
+    component: () => import(/* webpackChunkName: "about" */ '../views/stopLight.vue')
   },
   {
     path:'/heart',
